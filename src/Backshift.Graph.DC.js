@@ -63,9 +63,21 @@ Backshift.Graph.DC = Backshift.Class.create(Backshift.Graph, {
       i,
       k, row;
 
+    var timeFormat = d3.time.format('%Y-%m-%d %H:%M:%S');
+    var numberFormat = d3.format('0.2f');
+
     /* make this element unique so we can refer to it when rendering */
-    var id = self.element.getAttribute('data-graph-model') + self.idPrefix;
+    var dgName = self.element.getAttribute('data-graph-model');
+    if (dgName === undefined) {
+      dgName = self.element.getAttribute('data-graph-name');
+    }
+    var id = dgName + self.idPrefix;
     self.element.id = id;
+    jQuery(self.element)
+      .css('max-height', self.height)
+      .css('max-width', self.width)
+      .css('position', 'relative')
+      .css('float', 'none');
 
     for (i = 0; i < numRows; i++) {
       row = {};
@@ -249,19 +261,6 @@ Backshift.Graph.DC = Backshift.Class.create(Backshift.Graph, {
           lastChart.stack(columnGroups[i], ser.name);
           colors.push(ser.color);
         }
-
-        var timeFormat = d3.time.format('%Y-%m-%d %H:%M:%S');
-        var numberFormat = d3.format('0.2f');
-        /*
-        if (currentChart) {
-          currentChart
-            .renderTitle(true)
-            .title(function(p) {
-              return timeFormat(p.x) + ': ' + numberFormat(p.y);
-            })
-            ;
-        }
-        */
       }
 
       if (colors.length) {
@@ -281,7 +280,7 @@ Backshift.Graph.DC = Backshift.Class.create(Backshift.Graph, {
           bottom: (legendItemHeight * 2) + legendItemGap + 30,
           left: 45
         })
-        .transitionDuration(50)
+        .transitionDuration(0)
         .mouseZoomable(false)
         .zoomOutRestrict(true)
         .dimension(dateDimension)
@@ -290,26 +289,31 @@ Backshift.Graph.DC = Backshift.Class.create(Backshift.Graph, {
       chart
         .x(d3.time.scale().domain([minTime, maxTime]))
         .round(xunits.round)
-        .xUnits(xunits);
+        .xUnits(xunits)
+        ;
 
       chart
         .yAxisLabel(self.verticalLabel, 16)
         .elasticY(true)
-
         ;
 
-      if (itemCount > 1) {
-        var legend = dc.legend()
-          .x(50)
-          .y(self.height - ((legendItemHeight * 2) + legendItemGap))
-          .itemHeight(legendItemHeight)
-          .gap(legendItemGap)
-          .legendWidth(self.width - 140)
-          .horizontal(true)
-          .autoItemWidth(true)
+      chart
+        .renderTitle(true)
+        .title(function(p) {
+          return timeFormat(p.key) + ': ' + numberFormat(p.value.value);
+        })
         ;
-        chart.legend(legend);
-      }
+
+      var legend = dc.legend()
+        .x(50)
+        .y(self.height - ((legendItemHeight * 2) + legendItemGap))
+        .itemHeight(legendItemHeight)
+        .gap(legendItemGap)
+        .legendWidth(self.width - 140)
+        .horizontal(true)
+        .autoItemWidth(true)
+      ;
+      chart.legend(legend);
 
       chart.xAxis().ticks(6);
       chart.yAxis().tickFormat(d3.format('.2s'));
