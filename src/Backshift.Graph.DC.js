@@ -76,16 +76,10 @@ Backshift.Graph.DC = Backshift.Class.create(Backshift.Graph, {
         }
         if (val === null || val === undefined || val === 'NaN' || isNaN(val)) {
           val = NaN;
-          // if this column is NaN, we don't add it to the row (see below)
-          //continue;
         }
         row[results.columnNames[k]] = val;
       }
-      // if all columns were NaN, then we'll only have a timestamp
-      // don't bother putting this data into crossfilter
-      if (Object.keys(row).length > 1) {
-        rows.push(row);
-      }
+      rows.push(row);
     }
 
     var minTime = results.columns[0][0],
@@ -134,8 +128,6 @@ Backshift.Graph.DC = Backshift.Class.create(Backshift.Graph, {
         } else {
           p.value = p.total;
         }
-        //console.log('v=',v);
-        //console.log('p=',p);
         return p;
       };
 
@@ -187,9 +179,6 @@ Backshift.Graph.DC = Backshift.Class.create(Backshift.Graph, {
     } else {
       yMax = yMax * 0.9;
     }
-
-    //console.log('x: time scale: ' + minTime + ' through ' + maxTime);
-    //console.log('y: linear scale: ' + yMin + ' through ' + yMax);
 
     if (self.chart) {
       self.chart.redraw();
@@ -263,21 +252,16 @@ Backshift.Graph.DC = Backshift.Class.create(Backshift.Graph, {
 
         var timeFormat = d3.time.format('%Y-%m-%d %H:%M:%S');
         var numberFormat = d3.format('0.2f');
+        /*
         if (currentChart) {
           currentChart
             .renderTitle(true)
             .title(function(p) {
-              //console.log('title p=',p);
               return timeFormat(p.x) + ': ' + numberFormat(p.y);
-              /*
-              return [
-                p.x,
-                numberFormat(p.y)
-              ];
-              */
             })
             ;
         }
+        */
       }
 
       if (colors.length) {
@@ -295,7 +279,7 @@ Backshift.Graph.DC = Backshift.Class.create(Backshift.Graph, {
           top: 30,
           right: 20,
           bottom: (legendItemHeight * 2) + legendItemGap + 30,
-          left: 50
+          left: 45
         })
         .transitionDuration(50)
         .mouseZoomable(false)
@@ -309,8 +293,7 @@ Backshift.Graph.DC = Backshift.Class.create(Backshift.Graph, {
         .xUnits(xunits);
 
       chart
-        //.y(d3.scale.linear().domain([yMin, yMax]))
-        .yAxisLabel(self.verticalLabel)
+        .yAxisLabel(self.verticalLabel, 16)
         .elasticY(true)
 
         ;
@@ -331,34 +314,14 @@ Backshift.Graph.DC = Backshift.Class.create(Backshift.Graph, {
       chart.xAxis().ticks(6);
       chart.yAxis().tickFormat(d3.format('.2s'));
 
-      /*
-      chart
-        .on("preRender", function(chart){console.log('preRender:',chart);})
-        .on("postRender", function(chart){console.log('postRender:',chart);})
-        .on("preRedraw", function(chart){console.log('preRedraw:',chart);})
-        .on("postRedraw", function(chart){console.log('postRedraw:',chart);})
-        .on("filtered", function(chart, filter){console.log('filtered:',chart,filter);})
-        .on("zoomed", function(chart, filter){console.log('zoomed:',chart,filter);});
-        */
-
       if (self.title) {
         chart.on('postRender', function(chart) {
-          /*
-          var el = jQuery(self.element);
-          var titleChild = el.children('div.backshift-dc-title');
-          if (titleChild.length === 0) {
-            titleChild = jQuery(document.createElement('div'))
-              .addClass('backshift-dc-title')
-              .css('text-align', 'center')
-              .css('font-weight', 'bolder')
-              .css('font-size', 'larger')
-              .width('100%')
-              .appendTo(el);
-          }
-          titleChild.first().text(self.title);
-          */
-          console.log('chart=',chart);
           var svg = chart.svg();
+          svg.insert('rect', ':first-child')
+            .attr('width', '100%')
+            .attr('height', '100%')
+            .attr('fill', 'white');
+
           var boundingRect = svg.node().getBoundingClientRect();
 
           svg.select('#' + id + '-chart-title').remove();
@@ -372,8 +335,6 @@ Backshift.Graph.DC = Backshift.Class.create(Backshift.Graph, {
         });
       }
 
-      //console.log('self=',self);
-      //console.log('data=' + JSON.stringify(chart.dataSet()));
       chart
         .compose(charts)
         .brushOn(false)
