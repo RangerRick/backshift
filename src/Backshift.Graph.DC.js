@@ -243,7 +243,7 @@ Backshift.Graph.DC = Backshift.Class.create(Backshift.Graph, {
         } else if (ser.type === 'area') {
           itemCount++;
           if (colors.length) {
-            lastChart.colors(colors);
+            lastChart.ordinalColors(colors);
           }
           colors = [ser.color];
           currentChart = dc.lineChart(chart)
@@ -256,7 +256,7 @@ Backshift.Graph.DC = Backshift.Class.create(Backshift.Graph, {
         } else if (ser.type === 'line') {
           itemCount++;
           if (colors.length) {
-            lastChart.colors(colors);
+            lastChart.ordinalColors(colors);
           }
           colors = [ser.color];
           currentChart = dc.lineChart(chart)
@@ -296,10 +296,10 @@ Backshift.Graph.DC = Backshift.Class.create(Backshift.Graph, {
       }
 
       if (colors.length) {
-        charts[charts.length - 1].colors(colors);
+        charts[charts.length - 1].ordinalColors(colors);
       }
 
-      var legendItemHeight = 12,
+      var legendItemHeight = 10,
         legendItemGap = 5,
         legendSize = (legendItemHeight * itemCount) + (legendItemGap * (itemCount - 1)),
         bottomMargin = legendSize + 30;
@@ -318,7 +318,7 @@ Backshift.Graph.DC = Backshift.Class.create(Backshift.Graph, {
         .margins({
           top: 10,
           right: 20,
-          bottom: bottomMargin,
+          bottom: (legendItemHeight * 2) + legendItemGap + 30,
           left: 50
         })
         .transitionDuration(50)
@@ -340,10 +340,15 @@ Backshift.Graph.DC = Backshift.Class.create(Backshift.Graph, {
         ;
 
       if (itemCount > 1) {
-        var legend = dc.legend().x(80).y(self.height - legendSize).itemHeight(legendItemHeight).gap(legendItemGap);
-        window.setTimeout(function() {
-          console.log('legend=',legend);
-        }, 5000);
+        var legend = dc.legend()
+          .x(50)
+          .y(self.height - ((legendItemHeight * 2) + legendItemGap))
+          .itemHeight(legendItemHeight)
+          .gap(legendItemGap)
+          .legendWidth(self.width - 140)
+          .horizontal(true)
+          .autoItemWidth(true)
+        ;
         chart.legend(legend);
       }
 
