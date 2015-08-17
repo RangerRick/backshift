@@ -67,21 +67,6 @@ Backshift.Graph.DC = Backshift.Class.create(Backshift.Graph, {
     var id = self.element.getAttribute('data-graph-model') + self.idPrefix;
     self.element.id = id;
 
-    if (self.title) {
-      var el = jQuery(self.element);
-      var titleChild = el.children('div.backshift-dc-title');
-      if (titleChild.length === 0) {
-        titleChild = jQuery(document.createElement('div'))
-          .addClass('backshift-dc-title')
-          .css('text-align', 'center')
-          .css('font-weight', 'bolder')
-          .css('font-size', 'larger')
-          .width('100%')
-          .appendTo(el);
-      }
-      titleChild.first().text(self.title);
-    }
-
     for (i = 0; i < numRows; i++) {
       row = {};
       for (k = 0; k < numColumns; k++) {
@@ -300,23 +285,14 @@ Backshift.Graph.DC = Backshift.Class.create(Backshift.Graph, {
       }
 
       var legendItemHeight = 10,
-        legendItemGap = 5,
-        legendSize = (legendItemHeight * itemCount) + (legendItemGap * (itemCount - 1)),
-        bottomMargin = legendSize + 30;
+        legendItemGap = 5;
 
-      if (this.height - legendSize < 200) {
-        console.log("WARNING: legend is too big; falling back to rendering over the graph");
-        legendSize = self.height - 20;
-        bottomMargin = 30;
-      }
-
-      //console.log('charts=',charts);
       chart
         .renderHorizontalGridLines(true)
         .width(self.width)
         .height(self.height)
         .margins({
-          top: 10,
+          top: 30,
           right: 20,
           bottom: (legendItemHeight * 2) + legendItemGap + 30,
           left: 50
@@ -364,6 +340,37 @@ Backshift.Graph.DC = Backshift.Class.create(Backshift.Graph, {
         .on("filtered", function(chart, filter){console.log('filtered:',chart,filter);})
         .on("zoomed", function(chart, filter){console.log('zoomed:',chart,filter);});
         */
+
+      if (self.title) {
+        chart.on('postRender', function(chart) {
+          /*
+          var el = jQuery(self.element);
+          var titleChild = el.children('div.backshift-dc-title');
+          if (titleChild.length === 0) {
+            titleChild = jQuery(document.createElement('div'))
+              .addClass('backshift-dc-title')
+              .css('text-align', 'center')
+              .css('font-weight', 'bolder')
+              .css('font-size', 'larger')
+              .width('100%')
+              .appendTo(el);
+          }
+          titleChild.first().text(self.title);
+          */
+          console.log('chart=',chart);
+          var svg = chart.svg();
+          var boundingRect = svg.node().getBoundingClientRect();
+
+          svg.select('#' + id + '-chart-title').remove();
+          svg.append('text')
+            .attr('id', id + '-chart-title')
+            .attr('x', boundingRect.width / 2)
+            .attr('y', '20')
+            .attr('text-anchor', 'middle')
+            .style('font-size', '1em')
+            .text(self.title);
+        });
+      }
 
       //console.log('self=',self);
       //console.log('data=' + JSON.stringify(chart.dataSet()));
