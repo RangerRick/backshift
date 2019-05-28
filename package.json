@@ -14,7 +14,7 @@
     "grunt-contrib-jshint": "~1.1.0",
     "grunt-contrib-nodeunit": "~1.0.0",
     "grunt-contrib-uglify": "~3.3.0",
-    "grunt-jsdoc": "~2.2.1",
+    "grunt-jsdoc": "~2.4.0",
     "http-server": "~0.11.1",
     "jasmine-core": "^3.1.0",
     "jsdoc": "^3.5.5",
