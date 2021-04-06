@@ -9,7 +9,7 @@
   "dependencies": {
     "c3": "~0.4.11",
     "d3": "~3.5.16",
-    "dcjs": "https://github.com/dc-js/dc.js.git#2.0.0-beta.27",
+    "dcjs": "https://github.com/dc-js/dc.js.git#4.2.4",
     "flot": "~0.8.3",
     "flot-axislabels": "https://github.com/j-white/flot-axislabels.git#master",
     "jquery": "~2.1.4",
